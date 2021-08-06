@@ -1,0 +1,18 @@
+.onHover {
+  transition: transform .25s ease-out;
+}
+
+/*Button grows upon hover*/
+.onHover:hover {
+  transform: scale(1.05);
+}
+
+/*Transform will happen when button is clicked on*/
+.onHover:active {
+  transform: scale(.9);
+}
+
+/*Creates black border around both input boxes on sign in form*/
+.bord {
+  border-color: black;
+}
