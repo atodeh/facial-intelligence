@@ -84,6 +84,7 @@ class App extends React.Component {
 
   //this function will control the "Detect!" button in the ImageLinkForm component
   onButtonSubmit = () => {
+    let message = false; //caps potential error message at 1
     this.setState({imageUrl: this.state.input});
     fetch('https://pure-shore-49646.herokuapp.com/imageurl', {
       method: 'post',
@@ -94,7 +95,7 @@ class App extends React.Component {
     })
     .then(response => response.json())
     .then(response => {
-      if (response !== "error") {
+      if (response.outputs[0].data.regions) {
         fetch('https://pure-shore-49646.herokuapp.com/image', {
           method: 'put',
           headers: {'Content-Type': 'application/json'},
@@ -108,13 +109,20 @@ class App extends React.Component {
           cloneUser.entries = data; //data from the backend will be assigned to the entries property in the cloned object
           this.setState({user: cloneUser}); //the user object will now be updated to the cloned object
         })    
-      }
+      } else {
+        this.setState({box: []})
+        message = true; //ensures the following popup alert will be the only error
+        Popup.alert("No faces have been detected"); //in case a valid image is submitted, but no faces detected
+        }
       /*takes the response from Clarifai API, and passes it through calculateFaceLocation()
       and then displayFaceBox() in order calculate where the face boxes should be drawn*/
       this.displayFaceBox(this.calculateFaceLocation(response))
     })
     .catch(error => {
-      Popup.alert("Please enter a valid image url"); //in case clarifai api fails
+      //checks to make sure no other error messages have appeared
+      if (!message) {
+        Popup.alert("Please enter a valid image url"); //in case clarifai api fails
+      }
     }); 
   }
 
